@@ -12,3 +12,13 @@ More to come!
 ```
 docker run -d --rm -p 5432:5432 -e POSTGRES_PASSWORD=password postgres:9.6.17-alpine
 ```
+
+#### Cassandra
+
+ - https://github.com/AlexPikalov/cdrs
+ - https://github.com/AlexPikalov/cdrs-helpers-derive
+ - https://hub.docker.com/_/cassandra
+
+ ```
+docker run -d --rm -p 9042:9042 cassandra:3.11.6
+ ```
