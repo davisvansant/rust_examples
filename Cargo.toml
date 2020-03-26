@@ -2,5 +2,6 @@
 members = [
   "redis",
   "postgres",
-  "cassandra"
+  "cassandra",
+  "actix_rest_api"
 ]
