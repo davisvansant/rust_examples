@@ -1,26 +1,101 @@
 use actix_web::{web, App, HttpServer, HttpResponse, HttpRequest};
 use actix_web::middleware::Logger;
 use env_logger::Env;
-use redis::AsyncCommands;
+use redis::{AsyncCommands, parse_redis_value};
 // use redis::Commands;
 // use redis::FromRedisValue;
 use std::collections::HashSet;
+use serde_json::ser;
+use serde_json::json;
+use serde::{Deserialize, Serialize};
 
 struct Release {
     name: String,
     release_date: String,
 }
 
+#[derive(Serialize)]
+struct Eps {
+    eps: Vec<String>,
+}
+
+#[derive(Serialize)]
+struct Albums {
+    albums: Vec<String>,
+}
+
+// async fn albums(_req: HttpRequest) -> HttpResponse {
+//     HttpResponse::Ok().body("Albums!")
+// }
+
 async fn albums(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok().body("Albums!")
+    let get_albums = do_get_albums().await;
+    let albums = get_albums.ok().unwrap();
+    HttpResponse::Ok().json(Albums{ albums: albums })
 }
 
 async fn eps(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok().body("EPs!")
+    let get_eps = do_get_eps().await;
+    let eps = get_eps.ok().unwrap();
+    // let mut json_map = serde_json::Map::new();
+    // for k in eps {
+    //     let v: String = con.get(&k).await.unwrap();
+    //     json_map.insert(k, serde_json::to_value(v).unwrap());
+    // };
+    // HttpResponse::Ok().body("EPs!")
+    // let json_eps = do_get_eps().await;
+
+    // let eps = json!({"albums": [ {"cool": "stuff", "awesome": "blossom"} ]});
+    // let eps_rsp = json!({"albums": [ eps ]});
+    HttpResponse::Ok().json(Eps{ eps: eps })
+}
+
+async fn do_get_eps() -> redis::RedisResult<Vec<String>> {
+    let client = redis::Client::open("redis://redis/")?;
+    let mut con = client.get_async_connection().await?;
+
+    let members: Vec<String> = con.smembers("eps").await?;
+    Ok(members)
+
+    // let mut json_map = serde_json::Map::new();
+    //
+    // for k in members {
+    //     let v: String = con.get(&k).await?;
+    //     json_map.insert(k, serde_json::to_value(v).unwrap());
+    // };
+
+    // println!("{:?}", json_map.len());
+    // println!("{:?}", json_map);
+    // println!("{:?}", serde_json::to_string(&json_map));
+
+    // Ok(json_map)
+
+}
+
+async fn do_get_albums() -> redis::RedisResult<Vec<String>> {
+    let client = redis::Client::open("redis://redis/")?;
+    let mut con = client.get_async_connection().await?;
+
+    let members: Vec<String> = con.smembers("albums").await?;
+    Ok(members)
+
+    // let mut json_map = serde_json::Map::new();
+    //
+    // for k in members {
+    //     let v: String = con.get(&k).await?;
+    //     json_map.insert(k, serde_json::to_value(v).unwrap());
+    // };
+
+    // println!("{:?}", json_map.len());
+    // println!("{:?}", json_map);
+    // println!("{:?}", serde_json::to_string(&json_map));
+
+    // Ok(json_map)
+
 }
 
 async fn do_set_albums() -> redis::RedisResult<()> {
-    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let client = redis::Client::open("redis://redis/")?;
     let mut con = client.get_async_connection().await?;
 
     // let () = con.zadd_multiple("albums", &[("flight", 2000), ("fuel", 1997), ("caution", 2002)]).await?;
@@ -63,15 +138,15 @@ async fn do_set_albums() -> redis::RedisResult<()> {
 }
 
 async fn do_set_eps() -> redis::RedisResult<()> {
-    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let client = redis::Client::open("redis://redis/")?;
     let mut con = client.get_async_connection().await?;
 
-    let one = Release { name: "(Push For Coin)".to_string(), release_date: "1995".to_string() };
-    let two = Release { name: "You Can Take the Boy Out Of Brandenton".to_string(), release_date: "1996".to_string() };
-    let three = Release { name: "Alachua".to_string(), release_date: "1997".to_string() };
-    let four = Release { name: "Where We Belong / Moonpies For Misfits".to_string(), release_date: "1999".to_string() };
-    let five = Release { name: "Moments Pass / Another Way".to_string(), release_date: "1999".to_string() };
-    let six = Release { name: "Shake Up The Shadows".to_string(), release_date: "2019".to_string() };
+    let one = Release { name: "(Push For Coin)".to_owned(), release_date: "1995".to_owned() };
+    let two = Release { name: "You Can Take the Boy Out Of Brandenton".to_owned(), release_date: "1996".to_owned() };
+    let three = Release { name: "Alachua".to_owned(), release_date: "1997".to_owned() };
+    let four = Release { name: "Where We Belong / Moonpies For Misfits".to_owned(), release_date: "1999".to_owned() };
+    let five = Release { name: "Moments Pass / Another Way".to_owned(), release_date: "1999".to_owned() };
+    let six = Release { name: "Shake Up The Shadows".to_owned(), release_date: "2019".to_owned() };
 
     con.set(&one.name, one.release_date).await?;
     con.set(&two.name, two.release_date).await?;
@@ -89,10 +164,37 @@ async fn do_set_eps() -> redis::RedisResult<()> {
 
     let members: HashSet<String> = con.smembers("eps").await?;
 
+    // let json = json!({
+    //     "albums": {
+    //         "cool": "stuff"
+    //     }
+    // });
+    //
+    // println!("{:?}", json.to_string());
+    let mut json_map = serde_json::Map::new();
+
     for k in members {
         let v: String = con.get(&k).await?;
-        println!("{} - {}", k, v);
+        // println!("{:?} - {:?}", serde_json::to_value(&k), serde_json::to_value(&v));
+        // let json = json!({
+        //     &k: &v
+        // });
+        // println!("{:?}", json);
+        // let mut json_map = serde_json::Map::new();
+        json_map.insert(k, serde_json::to_value(v).unwrap());
+        // println!("{:?}", json_map);
+        // println!("{:?}", json_map.len());
+        // let something = json!({
+        //     "albums": {
+        //         &k: &v,
+        //     }
+        // });
+        // println!("{:?}", something.to_string());
     }
+
+    println!("{:?}", json_map.len());
+    println!("{:?}", json_map);
+    println!("{:?}", serde_json::to_string(&json_map));
 
     Ok(())
 }
@@ -145,7 +247,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn integration_handler_eps() {
-        let mut app = test::init_service(App::new().route("/eps", web::get().to(albums))).await;
+        let mut app = test::init_service(App::new().route("/eps", web::get().to(eps))).await;
         let req = test::TestRequest::get().uri("/eps").to_request();
         let resp = test::call_service(&mut app, req).await;
         assert!(resp.status().is_success());
