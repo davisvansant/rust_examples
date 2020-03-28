@@ -143,12 +143,12 @@ async fn do_set_eps() -> redis::RedisResult<()> {
     let client = redis::Client::open("redis://redis/")?;
     let mut con = client.get_async_connection().await?;
 
-    let one = Release { name: "(Push For Coin)".to_owned(), release_date: "1995".to_owned() };
-    let two = Release { name: "You Can Take the Boy Out Of Brandenton".to_owned(), release_date: "1996".to_owned() };
-    let three = Release { name: "Alachua".to_owned(), release_date: "1997".to_owned() };
-    let four = Release { name: "Where We Belong / Moonpies For Misfits".to_owned(), release_date: "1999".to_owned() };
-    let five = Release { name: "Moments Pass / Another Way".to_owned(), release_date: "1999".to_owned() };
-    let six = Release { name: "Shake Up The Shadows".to_owned(), release_date: "2019".to_owned() };
+    let one = Release { name: "(Push For Coin)".to_string(), release_date: "1995".to_string() };
+    let two = Release { name: "You Can Take the Boy Out Of Brandenton".to_string(), release_date: "1996".to_string() };
+    let three = Release { name: "Alachua".to_string(), release_date: "1997".to_string() };
+    let four = Release { name: "Where We Belong / Moonpies For Misfits".to_string(), release_date: "1999".to_string() };
+    let five = Release { name: "Moments Pass / Another Way".to_string(), release_date: "1999".to_string() };
+    let six = Release { name: "Shake Up The Shadows".to_string(), release_date: "2019".to_string() };
 
     con.set(&one.name, one.release_date).await?;
     con.set(&two.name, two.release_date).await?;
