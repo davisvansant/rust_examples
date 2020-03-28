@@ -1,13 +1,15 @@
 use actix_web::{web, App, HttpServer, HttpResponse, HttpRequest};
 use actix_web::middleware::Logger;
 use env_logger::Env;
-use redis::{AsyncCommands, parse_redis_value};
+// use redis::{AsyncCommands, parse_redis_value};
+use redis::*;
 // use redis::Commands;
 // use redis::FromRedisValue;
 use std::collections::HashSet;
-use serde_json::ser;
-use serde_json::json;
-use serde::{Deserialize, Serialize};
+// use serde_json::ser;
+// use serde_json::json;
+// use serde::{Deserialize, Serialize};
+use serde::*;
 
 struct Release {
     name: String,
@@ -31,7 +33,7 @@ struct Albums {
 async fn albums(_req: HttpRequest) -> HttpResponse {
     let get_albums = do_get_albums().await;
     let albums = get_albums.ok().unwrap();
-    HttpResponse::Ok().json(Albums{ albums: albums })
+    HttpResponse::Ok().json(Albums{ albums })
 }
 
 async fn eps(_req: HttpRequest) -> HttpResponse {
@@ -47,7 +49,7 @@ async fn eps(_req: HttpRequest) -> HttpResponse {
 
     // let eps = json!({"albums": [ {"cool": "stuff", "awesome": "blossom"} ]});
     // let eps_rsp = json!({"albums": [ eps ]});
-    HttpResponse::Ok().json(Eps{ eps: eps })
+    HttpResponse::Ok().json(Eps{ eps })
 }
 
 async fn do_get_eps() -> redis::RedisResult<Vec<String>> {
