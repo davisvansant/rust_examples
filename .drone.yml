@@ -8,3 +8,7 @@ steps:
   - rustup component add clippy
   - cargo clippy --workspace
   - cargo test --workspace
+
+services:
+  - name: redis
+    image: redis:5.0.7
