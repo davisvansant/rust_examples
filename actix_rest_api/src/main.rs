@@ -1,14 +1,8 @@
 use actix_web::{web, App, HttpServer, HttpResponse, HttpRequest};
 use actix_web::middleware::Logger;
 use env_logger::Env;
-// use redis::{AsyncCommands, parse_redis_value};
 use redis::*;
-// use redis::Commands;
-// use redis::FromRedisValue;
 use std::collections::HashSet;
-// use serde_json::ser;
-// use serde_json::json;
-// use serde::{Deserialize, Serialize};
 use serde::*;
 
 struct Release {
@@ -25,10 +19,6 @@ struct Eps {
 struct Albums {
     albums: Vec<String>,
 }
-
-// async fn albums(_req: HttpRequest) -> HttpResponse {
-//     HttpResponse::Ok().body("Albums!")
-// }
 
 async fn albums(_req: HttpRequest) -> HttpResponse {
     let get_albums = do_get_albums().await;
@@ -129,12 +119,12 @@ async fn do_set_albums() -> redis::RedisResult<()> {
     con.sadd("albums", &seven.name).await?;
     con.sadd("albums", &eight.name).await?;
 
-    let members: HashSet<String> = con.smembers("albums").await?;
-
-    for k in members {
-        let v: String = con.get(&k).await?;
-        println!("{} - {}", k, v);
-    }
+    // let members: HashSet<String> = con.smembers("albums").await?;
+    //
+    // for k in members {
+    //     let v: String = con.get(&k).await?;
+    //     println!("{} - {}", k, v);
+    // }
 
     Ok(())
 }
@@ -164,26 +154,19 @@ async fn do_set_eps() -> redis::RedisResult<()> {
     con.sadd("eps", &five.name).await?;
     con.sadd("eps", &six.name).await?;
 
-    let members: HashSet<String> = con.smembers("eps").await?;
-
-    // let json = json!({
-    //     "albums": {
-    //         "cool": "stuff"
-    //     }
-    // });
+    // let members: HashSet<String> = con.smembers("eps").await?;
     //
-    // println!("{:?}", json.to_string());
-    let mut json_map = serde_json::Map::new();
-
-    for k in members {
-        let v: String = con.get(&k).await?;
+    // let mut json_map = serde_json::Map::new();
+    //
+    // for k in members {
+    //     let v: String = con.get(&k).await?;
         // println!("{:?} - {:?}", serde_json::to_value(&k), serde_json::to_value(&v));
         // let json = json!({
         //     &k: &v
         // });
         // println!("{:?}", json);
         // let mut json_map = serde_json::Map::new();
-        json_map.insert(k, serde_json::to_value(v).unwrap());
+        // json_map.insert(k, serde_json::to_value(v).unwrap());
         // println!("{:?}", json_map);
         // println!("{:?}", json_map.len());
         // let something = json!({
@@ -192,11 +175,11 @@ async fn do_set_eps() -> redis::RedisResult<()> {
         //     }
         // });
         // println!("{:?}", something.to_string());
-    }
+    // }
 
-    println!("{:?}", json_map.len());
-    println!("{:?}", json_map);
-    println!("{:?}", serde_json::to_string(&json_map));
+    // println!("{:?}", json_map.len());
+    // println!("{:?}", json_map);
+    // println!("{:?}", serde_json::to_string(&json_map));
 
     Ok(())
 }
