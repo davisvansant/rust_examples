@@ -3,5 +3,6 @@ members = [
   "redis",
   "postgres",
   "cassandra",
-  "actix_rest_api"
+  "actix_rest_api",
+  "actix_graphql_api"
 ]
