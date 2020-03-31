@@ -9,4 +9,5 @@ edition = "2018"
 [dependencies]
 actix-web = "2.0.0"
 actix-rt = "1.0.0"
-juniper = "0.14.2" 
+juniper = "0.14.2"
+env_logger = "0.7.1" 
