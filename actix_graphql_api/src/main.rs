@@ -5,6 +5,8 @@ use juniper::*;
 use juniper::http::graphiql::graphiql_source;
 use juniper::http::playground::playground_source;
 
+mod schema;
+
 async fn graphiql() -> HttpResponse {
     let html = graphiql_source("/graphiql");
 
