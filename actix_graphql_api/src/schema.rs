@@ -1,7 +1,7 @@
 use juniper::{FieldResult, RootNode};
 use juniper::{GraphQLEnum, GraphQLInputObject, GraphQLObject};
 
-#[derive(juniper::GraphQLEnum)]
+#[derive(GraphQLEnum)]
 enum Season {
     One,
     Two,
@@ -17,7 +17,7 @@ enum Season {
     Twelve,
 }
 
-#[derive(juniper::GraphQLObject)]
+#[derive(GraphQLObject)]
 struct Episode {
     name: String,
     original_air_date: String,
