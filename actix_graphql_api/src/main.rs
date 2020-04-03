@@ -1,13 +1,13 @@
 // use actix_web::*;
 use actix_web::middleware::Logger;
-use actix_web::{middleware, web, App, Error, HttpResponse, HttpServer};
+use actix_web::{web, App, HttpResponse, HttpServer};
 use env_logger::Env;
 // use juniper::*;
 use juniper::http::graphiql::graphiql_source;
 use juniper::http::playground::playground_source;
 use std::sync::Arc;
 // use serde_json::*;
-use serde_json::{Result, Value, Error as serde_json_error};
+// use serde_json::{Result, Value, Error as serde_json_error};
 use juniper::http::GraphQLRequest;
 
 mod schema;
