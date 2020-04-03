@@ -4,6 +4,5 @@ members = [
   "postgres",
   "cassandra",
   "actix_rest_api",
-  "actix_graphql_api",
-  "rocket_graphql_api"
+  "actix_graphql_api"
 ]
