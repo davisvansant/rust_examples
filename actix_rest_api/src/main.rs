@@ -2,9 +2,9 @@ use actix_web::{web, App, HttpServer, HttpResponse, HttpRequest};
 use actix_web::middleware::Logger;
 use env_logger::Env;
 use redis::*;
-use std::collections::HashSet;
+// use std::collections::HashSet;
 use serde::*;
-use serde_json::*;
+// use serde_json::*;
 
 #[derive(Deserialize, Debug)]
 struct Release {
@@ -36,13 +36,13 @@ async fn eps(_req: HttpRequest) -> HttpResponse {
     HttpResponse::Ok().json(Eps{ eps })
 }
 
-async fn do_get_redis_value(key: &String) -> redis::RedisResult<String> {
-    let client = redis::Client::open("redis://redis/")?;
-    let mut con = client.get_async_connection().await?;
-    let value: String = con.get(key).await?;
-
-    Ok(value)
-}
+// async fn do_get_redis_value(key: &String) -> redis::RedisResult<String> {
+//     let client = redis::Client::open("redis://redis/")?;
+//     let mut con = client.get_async_connection().await?;
+//     let value: String = con.get(key).await?;
+//
+//     Ok(value)
+// }
 
 async fn do_get_eps() -> redis::RedisResult<Vec<String>> {
     let client = redis::Client::open("redis://redis/")?;
